@@ -1,5 +1,9 @@
 package com.epam.mjc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 public class MethodParser {
 
     /**
@@ -20,6 +24,40 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        StringTokenizer tokenizer = new StringTokenizer(signatureString, " ,(");
+        String nextToken = tokenizer.nextToken();
+        String methodName;
+        String accessModifier;
+        String rType;
+        if(nextToken.equals("private") || nextToken.equals("public")){
+            accessModifier = nextToken;
+            rType = tokenizer.nextToken();
+        }
+        else{
+            accessModifier = null;
+            rType = nextToken;
+        }
+        methodName = tokenizer.nextToken();
+        String methodSignature = signatureString.substring(signatureString.indexOf(methodName) + methodName.length());
+        StringTokenizer tokenizer1 = new StringTokenizer(methodSignature, " ,)(");
+        List<MethodSignature.Argument> arguments = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        while (tokenizer1.hasMoreTokens()){
+            list.add(tokenizer1.nextToken());
+        }
+        System.out.println(list);
+        for (int i = 0; i < list.size() - 1; i+=2) {
+            arguments.add(new MethodSignature.Argument(list.get(i),list.get(i+1)));
+        }
+        MethodSignature methodSignature1 = new MethodSignature(methodName,arguments);
+        methodSignature1.setReturnType(rType);
+        methodSignature1.setAccessModifier(accessModifier);
+
+        return methodSignature1;
+    }
+
+    public static void main(String[] args) {
+        MethodParser parser = new MethodParser();
+        System.out.println(parser.parseFunction("private void log(String logString, LogLevel level, Context context)"));
     }
 }
